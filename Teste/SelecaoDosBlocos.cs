@@ -5,16 +5,16 @@ using Autodesk.AutoCAD.DatabaseServices;
 using System;
 using System.Collections.Generic;
 using AutocadApp = Autodesk.AutoCAD.ApplicationServices.Application;
+using System.Linq;
 
 namespace Teste
 {
     public class SelecaoDosBlocos
     {
-        //[CommandMethod("Drenagem")]
+        private static AtributosDoBloco Atributo1 = new AtributosDoBloco();
+        private static List<AtributosDoBloco> _lista;
 
-        AtributosDoBloco Atributo1 = new AtributosDoBloco();
-
-        List<String> PrefixoDoNomeDosBlocos = new List<String>
+        private static List<String> PrefixoDoNomeDosBlocos = new List<String>
             { "ST",
                "CA",
                "CPC",
@@ -26,6 +26,17 @@ namespace Teste
                "CPCD",
                "CCC" };
 
+        public SelecaoDosBlocos()
+        {
+            LerTodosOsBlocosEBuscarOsAtributos();
+            AutoCadDocument.Editor.WriteMessage("olar");
+            AutoCadDocument.Editor.WriteMessage("esses sao teus bloquin:");            
+            
+            foreach (AtributosDoBloco a in _lista)
+                AutoCadDocument.Editor.WriteMessage(a.NomeEfetivoDoBloco);
+
+            // EscreveDadosNoExcel();
+        }
 
         public static Document AutoCadDocument
         {
@@ -39,30 +50,31 @@ namespace Teste
             return _selAll.Value;
         }
 
-        public List<AtributosDoBloco> LerTodosOsBlocosEBuscarOsAtributos()
+        public static void LerTodosOsBlocosEBuscarOsAtributos()
         {
-            List<AtributosDoBloco> lista = new List<AtributosDoBloco>();
+            _lista = new List<AtributosDoBloco>();
 
             SelectionSet selecao = GetSelectionSet();
 
-            foreach (BlockReference bloco in selecao)
+            foreach (var bloco in selecao)
             {
-                if (PrefixoDoNomeDosBlocos.Contains(Atributo1.NomeEfetivoDoBloco))
+                if (bloco.GetType() == typeof(BlockReference) && PrefixoDoNomeDosBlocos.Contains(((BlockReference)bloco).BlockName))
                 {
-                    Atributo1.X = bloco.Position.X;
-                    Atributo1.Y = bloco.Position.Y;
-                    Atributo1.Handle = bloco.Handle.ToString();
-                    Atributo1.NomeEfetivoDoBloco = bloco.BlockName;
-                    Atributo1.Angulo = bloco.Rotation;
-                    lista.Add(Atributo1);
+                    BlockReference blocoTemporario = (BlockReference)bloco;
+
+                    Atributo1.X = blocoTemporario.Position.X;
+                    Atributo1.Y = blocoTemporario.Position.Y;
+                    Atributo1.Handle = blocoTemporario.Handle.ToString();
+                    Atributo1.NomeEfetivoDoBloco = blocoTemporario.BlockName;
+                    Atributo1.Angulo = blocoTemporario.Rotation;
+                    _lista.Add(Atributo1);
                 }
             }
-            return lista;
         }
 
-        public void EscreveDadosNoExcel(List<AtributosDoBloco> lista)
+        public static void EscreveDadosNoExcel()
         {
-            ExcelUtils.abrirExcel();
+            ExcelUtils.AbrirExcel();
 
             //int linha = 4;
             //foreach (AtributosDoBloco atributo in lista)
@@ -75,7 +87,7 @@ namespace Teste
 
             //    linha++;
         }
-        
+
     }
 }
 
