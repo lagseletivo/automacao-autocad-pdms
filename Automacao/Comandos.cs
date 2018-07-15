@@ -1,16 +1,15 @@
 ﻿using Autodesk.AutoCAD.Runtime;
 
-namespace Teste
+namespace Automacao
 {
-    public class Comando
+    public class Comandos
     {
         [CommandMethod("Drenagem")]
         public static void Drenagem()
         {
             SelecaoDosBlocos comando = new SelecaoDosBlocos();
-
-            //var lista = SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
-            //SelecaoDosBlocos.EscreveDadosNoExcel(lista);
+            SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
+            SelecaoDosBlocos.EscreveDadosNoExcel();
         }
     }
 }

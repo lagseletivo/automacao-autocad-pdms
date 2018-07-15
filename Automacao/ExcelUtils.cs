@@ -1,6 +1,6 @@
 using Excel = Microsoft.Office.Interop.Excel;
 
-namespace Teste
+namespace Automacao
 {
     public static class ExcelUtils
     {

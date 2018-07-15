@@ -1,4 +1,4 @@
-﻿namespace Teste
+﻿namespace Automacao
 {
     public class AtributosDoBloco
     {

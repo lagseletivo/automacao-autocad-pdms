@@ -1,37 +1,25 @@
-using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Runtime;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using System;
+using Autodesk.AutoCAD.EditorInput;
+using System.Linq;
 using System.Collections.Generic;
 using AutocadApp = Autodesk.AutoCAD.ApplicationServices.Application;
-using System.Linq;
+using Automacao.Setup;
+using System;
 
-namespace Teste
+namespace Automacao
 {
     public class SelecaoDosBlocos
     {
         private static AtributosDoBloco Atributo1 = new AtributosDoBloco();
         private static List<AtributosDoBloco> _lista;
 
-        private static List<String> PrefixoDoNomeDosBlocos = new List<String>
-            { "ST",
-               "CA",
-               "CPC",
-               "CP-OLEOSA",
-               "CPNC",
-               "CPO",
-               "CPNC",
-               "CL",
-               "CPCD",
-               "CCC" };
-
         public SelecaoDosBlocos()
         {
             LerTodosOsBlocosEBuscarOsAtributos();
             AutoCadDocument.Editor.WriteMessage("olar");
-            AutoCadDocument.Editor.WriteMessage("esses sao teus bloquin:");            
-            
+            AutoCadDocument.Editor.WriteMessage("esses sao teus bloquin:");
+
             foreach (AtributosDoBloco a in _lista)
                 AutoCadDocument.Editor.WriteMessage(a.NomeEfetivoDoBloco);
 
@@ -52,23 +40,29 @@ namespace Teste
 
         public static void LerTodosOsBlocosEBuscarOsAtributos()
         {
-            _lista = new List<AtributosDoBloco>();
-
-            SelectionSet selecao = GetSelectionSet();
-
-            foreach (var bloco in selecao)
+            try
             {
-                if (bloco.GetType() == typeof(BlockReference) && PrefixoDoNomeDosBlocos.Contains(((BlockReference)bloco).BlockName))
-                {
-                    BlockReference blocoTemporario = (BlockReference)bloco;
+                _lista = new List<AtributosDoBloco>();
 
-                    Atributo1.X = blocoTemporario.Position.X;
-                    Atributo1.Y = blocoTemporario.Position.Y;
-                    Atributo1.Handle = blocoTemporario.Handle.ToString();
-                    Atributo1.NomeEfetivoDoBloco = blocoTemporario.BlockName;
-                    Atributo1.Angulo = blocoTemporario.Rotation;
-                    _lista.Add(Atributo1);
+                TypedValue[] filtro = { new TypedValue(0, "INSERT"), new TypedValue(0, typeof(BlockReference)) };
+                PromptSelectionResult selecao = AutoCadDocument.Editor.SelectAll(new SelectionFilter(filtro));
+                foreach (BlockReference bloco in selecao.Value)
+                {
+                    if (Constantes.PrefixoDoNomeDosBlocos.Contains(bloco.BlockName))
+                    {
+                        Atributo1.X = bloco.Position.X;
+                        Atributo1.Y = bloco.Position.Y;
+                        Atributo1.Handle = bloco.Handle.ToString();
+                        Atributo1.NomeEfetivoDoBloco = bloco.BlockName;
+                        Atributo1.Angulo = bloco.Rotation;
+                        _lista.Add(Atributo1);
+                    }
                 }
+            }
+
+            catch (Exception e)
+            {
+                FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);
             }
         }
 
@@ -88,6 +82,14 @@ namespace Teste
             //    linha++;
         }
 
+        private static void FinalizaTarefasAposExcecao(string mensagemInicial, Exception excecao)
+        {
+            Console.WriteLine();
+            Console.WriteLine(mensagemInicial + " Erro:" + Environment.NewLine + excecao.Message + Environment.NewLine + Environment.NewLine);
+            Console.WriteLine("Pressione qualquer tecla para sair.");
+            Console.ReadKey();
+            Environment.Exit(0);
+        }
     }
 }
 
