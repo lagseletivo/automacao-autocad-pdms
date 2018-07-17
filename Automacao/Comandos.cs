@@ -8,7 +8,7 @@ namespace Automacao
         public static void Drenagem()
         {
             SelecaoDosBlocos comando = new SelecaoDosBlocos();
-            SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
+            //SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
             SelecaoDosBlocos.EscreveDadosNoExcel();
         }
     }

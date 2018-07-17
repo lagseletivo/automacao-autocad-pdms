@@ -16,14 +16,12 @@ namespace Automacao
 
         public SelecaoDosBlocos()
         {
-            LerTodosOsBlocosEBuscarOsAtributos();
-            AutoCadDocument.Editor.WriteMessage("olar");
-            AutoCadDocument.Editor.WriteMessage("esses sao teus bloquin:");
+            //LerTodosOsBlocosEBuscarOsAtributos();
+            //AutoCadDocument.Editor.WriteMessage("olar");
+            //AutoCadDocument.Editor.WriteMessage("esses sao teus bloquin:");
 
-            foreach (AtributosDoBloco a in _lista)
-                AutoCadDocument.Editor.WriteMessage(a.NomeEfetivoDoBloco);
-
-            // EscreveDadosNoExcel();
+            //foreach (AtributosDoBloco a in _lista)
+            //    AutoCadDocument.Editor.WriteMessage(a.NomeEfetivoDoBloco);
         }
 
         public static Document AutoCadDocument
@@ -86,8 +84,7 @@ namespace Automacao
         {
             Console.WriteLine();
             Console.WriteLine(mensagemInicial + " Erro:" + Environment.NewLine + excecao.Message + Environment.NewLine + Environment.NewLine);
-            Console.WriteLine("Pressione qualquer tecla para sair.");
-            Console.ReadKey();
+            Console.WriteLine("Pressione qualquer tecla para sair.");         
             Environment.Exit(0);
         }
     }
