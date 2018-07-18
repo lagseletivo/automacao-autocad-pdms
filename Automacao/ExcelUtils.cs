@@ -22,7 +22,7 @@ namespace Automacao
                 planilha.Cells[linha, 6] = atributo.X;
                 planilha.Cells[linha, 7] = atributo.Y;
                 planilha.Cells[linha, 1] = atributo.Handle;
-                //planilha.Cells[linha, 2] = atributo.Nome;
+                planilha.Cells[linha, 2] = atributo.nomeBloco;
                 planilha.Cells[linha, 3] = atributo.NomeEfetivoDoBloco;
                 planilha.Cells[linha, 25] = atributo.Angulo;
 

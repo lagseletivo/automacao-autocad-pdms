@@ -1,6 +1,5 @@
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Automacao.Setup;
 using System;
 using System.Collections.Generic;
 
@@ -25,13 +24,13 @@ namespace Automacao
                 BlockTable blockTable;
                 blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
 
-                 //PrefixoDoNomeDosBlocos com nome de todos os blocos
-                 BlockTableRecord blockTableRecord;
+                //PrefixoDoNomeDosBlocos com nome de todos os blocos
+                BlockTableRecord blockTableRecord;
                 blockTableRecord = acTrans.GetObject(blockTable["CP_1.20_1.20"], OpenMode.ForRead) as BlockTableRecord;
 
                 try
                 {
-                    //HashSet<string> attValues = new HashSet<string>();
+                    HashSet<string> attValues = new HashSet<string>();
 
                     _lista = new List<AtributosDoBloco>();
 
