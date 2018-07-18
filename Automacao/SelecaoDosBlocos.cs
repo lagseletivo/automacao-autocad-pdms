@@ -8,8 +8,7 @@ namespace Automacao
 {
     public class SelecaoDosBlocos
     {
-        public static AtributosDoBloco Atributo1 = new AtributosDoBloco();
-        public static List<AtributosDoBloco> _lista;
+        private static List<AtributosDoBloco> _lista;
 
         public SelecaoDosBlocos()
         {
@@ -54,7 +53,7 @@ namespace Automacao
                             Atributo1.NomeEfetivoDoBloco = texto;
                         }
 
-                        //Adicionar nome na Lista Atributos e fazer o Loop funcionar
+                        AtributosDoBloco Atributo1 = new AtributosDoBloco();
                         Atributo1.X = bloco.Position.X;
                         Atributo1.Y = bloco.Position.Y;
                         Atributo1.nomeBloco = nomeRealBloco.Name;
@@ -75,6 +74,7 @@ namespace Automacao
         public static void EscreveDadosNoExcel()
         {
             ExcelUtils.AbrirExcel();
+            ExcelUtils.EscreveDados(_lista);
 
         }
         private static void FinalizaTarefasAposExcecao(string mensagemInicial, Exception excecao)
