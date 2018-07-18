@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AcDbMgd, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\AcDbMgd.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="acdbmgdbrep, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\acdbmgdbrep.dll</HintPath>
       <Private>False</Private>
