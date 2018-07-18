@@ -1,17 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Drenagem.Setup;
 using TodosBlocos;
-using System;
-using System.Collections.Generic;
+
 
 namespace Drenagem
 {
-    public class SelecaoDosBlocos
+    class TubulacaoDrenagem
     {
         private static List<AtributosDoBloco> _lista;
 
-        public SelecaoDosBlocos()
+        public TubulacaoDrenagem()
         {
             LerTodosOsBlocosEBuscarOsAtributos();
         }
@@ -46,15 +47,20 @@ namespace Drenagem
 
                             nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
 
-                            AttributeCollection attCol = bloco.AttributeCollection;
+                            //AttributeCollection attCol = bloco.AttributeCollection;
 
-                            foreach (ObjectId attId in attCol)
-                            {
-                                AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
-                                string texto = (attRef.TextString);
-                                string tag = attRef.Tag;
-                                Atributo1.NomeEfetivoDoBloco = texto;
-                            }
+                            //AcadBlockReference Tubo =
+
+                            //foreach (ObjectId attId in attCol)
+                            //{
+                            //    Object[] attribs = Tubo.GetAttributes() as object[];
+                            //    Object[] props = Tubo.GetDynamicBlockProperties() as object[];
+
+                            //    AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
+                            //    string texto = (attRef.TextString);
+                            //    string tag = attRef.Tag;
+                            //    Atributo1.NomeEfetivoDoBloco = texto;
+                            //}
 
                             Atributo1.X = bloco.Position.X;
                             Atributo1.Y = bloco.Position.Y;
@@ -86,7 +92,5 @@ namespace Drenagem
             Console.WriteLine("Pressione qualquer tecla para sair.");
             Environment.Exit(0);
         }
-
     }
 }
-

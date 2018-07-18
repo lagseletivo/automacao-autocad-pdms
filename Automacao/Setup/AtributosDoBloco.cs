@@ -1,4 +1,4 @@
-﻿namespace Automacao
+﻿namespace TodosBlocos
 {
     public class AtributosDoBloco
     {

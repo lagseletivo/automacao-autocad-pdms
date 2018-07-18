@@ -1,17 +1,17 @@
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Drenagem.Setup;
+using Drenagem;
 using TodosBlocos;
 using System;
 using System.Collections.Generic;
 
-namespace Drenagem
+namespace Eletrica
 {
-    public class SelecaoDosBlocos
+    public class CaixaPassagemEletrica
     {
         private static List<AtributosDoBloco> _lista;
 
-        public SelecaoDosBlocos()
+        public CaixaPassagemEletrica()
         {
             LerTodosOsBlocosEBuscarOsAtributos();
         }
@@ -29,11 +29,8 @@ namespace Drenagem
                 {
                     _lista = new List<AtributosDoBloco>();
 
-                    foreach (string nome in Constantes.PrefixoDoNomeDosBlocos)
-                    {
-
                         BlockTableRecord blockTableRecord;
-                        blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
+                        blockTableRecord = acTrans.GetObject(blockTable["Caixa_Passagem"], OpenMode.ForRead) as BlockTableRecord;
 
                         foreach (ObjectId objId_loopVariable in blockTableRecord.GetBlockReferenceIds(true, true))
                         {
@@ -63,10 +60,9 @@ namespace Drenagem
                             Atributo1.Angulo = bloco.Rotation;
                             _lista.Add(Atributo1);
                         }
-                        continue;
+
                     }
-                }
-                catch (Exception e)
+                 catch (Exception e)
                 {
                     FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);
                 }

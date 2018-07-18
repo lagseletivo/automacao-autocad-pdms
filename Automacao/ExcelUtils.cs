@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using TodosBlocos;
 using Excel = Microsoft.Office.Interop.Excel;
 
-namespace Automacao
+namespace Drenagem
 {
     public static class ExcelUtils
     {    
@@ -31,7 +32,7 @@ namespace Automacao
                 _planilha.Cells[linha, 6] = atributo.X;
                 _planilha.Cells[linha, 7] = atributo.Y;
                 _planilha.Cells[linha, 1] = atributo.Handle;
-                //planilha.Cells[linha, 2] = atributo.Nome;
+                _planilha.Cells[linha, 2] = atributo.nomeBloco;
                 _planilha.Cells[linha, 3] = atributo.NomeEfetivoDoBloco;
                 _planilha.Cells[linha, 25] = atributo.Angulo;
                 linha++;

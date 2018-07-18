@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AcDbMgd">
+      <HintPath>..\..\..\..\..\ObjectARX 2012\inc\AcDbMgd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="acdbmgdbrep, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoCAD-2012.Net.Base.1.0.0\lib\net40\acdbmgdbrep.dll</HintPath>
       <Private>False</Private>
@@ -73,12 +77,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CaixaPassagemEletrica.cs" />
     <Compile Include="Setup\AtributosDoBloco.cs" />
     <Compile Include="Comandos.cs" />
     <Compile Include="ExcelUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelecaoDosBlocos.cs" />
     <Compile Include="Setup\Constantes.cs" />
+    <Compile Include="TubulacaoDrenagem.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
