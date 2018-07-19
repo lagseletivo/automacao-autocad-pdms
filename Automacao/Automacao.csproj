@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaixaPassagemEletrica.cs" />
+    <Compile Include="SelecaoDosTextosTubulacao.cs" />
     <Compile Include="Setup\AtributosDoBloco.cs" />
     <Compile Include="Comandos.cs" />
     <Compile Include="ExcelUtils.cs" />

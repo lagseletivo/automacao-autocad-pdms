@@ -1,6 +1,6 @@
 ﻿using Autodesk.AutoCAD.Runtime;
-using Eletrica;
 using Drenagem;
+using Eletrica;
 
 namespace TodosComandos
 {
@@ -18,8 +18,8 @@ namespace TodosComandos
         {
             TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
             TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
-            TubulacaoDrenagem.EscreveDadosNoExcel();
-        }
+            //TubulacaoDrenagem.EscreveDadosNoExcel();
+        } 
     }
     public class ComandosEletrica
     {
@@ -31,5 +31,6 @@ namespace TodosComandos
             CaixaPassagemEletrica.EscreveDadosNoExcel();
         }
     }
+
 
 }

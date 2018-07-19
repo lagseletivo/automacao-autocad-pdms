@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Drenagem.Setup;
+using System;
+using System.Collections.Generic;
 using TodosBlocos;
-
 
 namespace Drenagem
 {
-    class TubulacaoDrenagem
+    public class TubulacaoDrenagem
     {
         private static List<AtributosDoBloco> _lista;
 
@@ -30,43 +29,36 @@ namespace Drenagem
                 {
                     _lista = new List<AtributosDoBloco>();
 
-                    foreach (string nome in Constantes.PrefixoDoNomeDosBlocos)
+                    foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
                     {
 
                         BlockTableRecord blockTableRecord;
                         blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
 
-                        foreach (ObjectId objId_loopVariable in blockTableRecord.GetBlockReferenceIds(true, true))
+                        foreach (ObjectId objId_loopVariable in blockTableRecord)
                         {
+                            BlockReference blocoDinamico;
+                            blocoDinamico = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference;
+
+                            DynamicBlockReferencePropertyCollection properties = blocoDinamico.DynamicBlockReferencePropertyCollection;
+
                             AtributosDoBloco Atributo1 = new AtributosDoBloco();
 
-                            BlockReference bloco;
-                            bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference; ;
+                            for (int i = 0; i < properties.Count; i++)
+                            {
+                                DynamicBlockReferenceProperty property = properties[i];
 
-                            BlockTableRecord nomeRealBloco = null;
+                                if (property.PropertyName == "Distance1")
+                                {
+                                    Atributo1.Distancia = property.Value.ToString();
+                                }
+                            }
+                            Atributo1.X = blocoDinamico.Position.X;
+                            Atributo1.Y = blocoDinamico.Position.Y;
+                            Atributo1.nomeBloco = blocoDinamico.Name;
+                            Atributo1.Handle = blocoDinamico.Handle.ToString();
+                            Atributo1.Angulo = blocoDinamico.Rotation;
 
-                            nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
-
-                            //AttributeCollection attCol = bloco.AttributeCollection;
-
-                            //AcadBlockReference Tubo =
-
-                            //foreach (ObjectId attId in attCol)
-                            //{
-                            //    Object[] attribs = Tubo.GetAttributes() as object[];
-                            //    Object[] props = Tubo.GetDynamicBlockProperties() as object[];
-
-                            //    AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
-                            //    string texto = (attRef.TextString);
-                            //    string tag = attRef.Tag;
-                            //    Atributo1.NomeEfetivoDoBloco = texto;
-                            //}
-
-                            Atributo1.X = bloco.Position.X;
-                            Atributo1.Y = bloco.Position.Y;
-                            Atributo1.nomeBloco = nomeRealBloco.Name;
-                            Atributo1.Handle = bloco.Handle.ToString();
-                            Atributo1.Angulo = bloco.Rotation;
                             _lista.Add(Atributo1);
                         }
                         continue;
@@ -92,5 +84,7 @@ namespace Drenagem
             Console.WriteLine("Pressione qualquer tecla para sair.");
             Environment.Exit(0);
         }
+
     }
 }
+
