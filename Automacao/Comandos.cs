@@ -13,13 +13,13 @@ namespace TodosComandos
             SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
             SelecaoDosBlocos.EscreveDadosNoExcel();
         }
-        [CommandMethod("DrenagemTubulacao")]
-        public static void DrenagemTubulacao()
-        {
-            TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
-            TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
-            //TubulacaoDrenagem.EscreveDadosNoExcel();
-        } 
+        //[CommandMethod("DrenagemTubulacao")]
+        //public static void DrenagemTubulacao()
+        //{
+        //TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
+        //TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
+        //TubulacaoDrenagem.EscreveDadosNoExcel();
+        //    } 
     }
     public class ComandosEletrica
     {
@@ -29,6 +29,14 @@ namespace TodosComandos
             CaixaPassagemEletrica.LerTodosOsBlocosEBuscarOsAtributos();
             CaixaPassagemEletrica.LerTodosOsBlocosEBuscarOsAtributos();
             CaixaPassagemEletrica.EscreveDadosNoExcel();
+        }
+
+        [CommandMethod("EletricaEstaqueamento")]
+        public static void EletricaEstaqueamento()
+        {
+            EstaqueamentoEletrica.LerTodosOsBlocosEBuscarOsAtributos();
+            EstaqueamentoEletrica.LerTodosOsBlocosEBuscarOsAtributos();
+            EstaqueamentoEletrica.EscreveDadosNoExcel();
         }
     }
 

@@ -31,42 +31,50 @@ namespace Drenagem
 
                     foreach (string nome in Constantes.PrefixoDoNomeDosBlocos)
                     {
-
-                        BlockTableRecord blockTableRecord;
-                        blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
-
-                        foreach (ObjectId objId_loopVariable in blockTableRecord.GetBlockReferenceIds(true, true))
+                        try
                         {
-                            AtributosDoBloco Atributo1 = new AtributosDoBloco();
 
-                            BlockReference bloco;
-                            bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference; ;
+                            BlockTableRecord blockTableRecord;
+                            blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
 
-                            BlockTableRecord nomeRealBloco = null;
-
-                            nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
-
-                            AttributeCollection attCol = bloco.AttributeCollection;
-
-                            foreach (ObjectId attId in attCol)
+                            foreach (ObjectId objId_loopVariable in blockTableRecord.GetBlockReferenceIds(true, true))
                             {
-                                AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
-                                string texto = (attRef.TextString);
-                                //string tag = attRef.Tag;
-                                Atributo1.NomeEfetivoDoBloco = texto;
+                                AtributosDoBloco Atributo1 = new AtributosDoBloco();
+
+                                BlockReference bloco;
+                                bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference; ;
+
+                                BlockTableRecord nomeRealBloco = null;
+
+                                nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+
+                                AttributeCollection attCol = bloco.AttributeCollection;
+
+                                foreach (ObjectId attId in attCol)
+                                {
+                                    AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
+                                    string texto = (attRef.TextString);
+                                    //string tag = attRef.Tag;
+                                    Atributo1.NomeEfetivoDoBloco = texto;
+                                }
+
+                                Atributo1.X = bloco.Position.X;
+                                Atributo1.Y = bloco.Position.Y;
+                                Atributo1.nomeBloco = nomeRealBloco.Name;
+                                Atributo1.Handle = bloco.Handle.ToString();
+                                Atributo1.Angulo = bloco.Rotation;
+                                _lista.Add(Atributo1);
                             }
+                        }
 
-                            Atributo1.X = bloco.Position.X;
-                            Atributo1.Y = bloco.Position.Y;
-                            Atributo1.nomeBloco = nomeRealBloco.Name;
-                            Atributo1.Handle = bloco.Handle.ToString();
-                            Atributo1.Angulo = bloco.Rotation;
-                            _lista.Add(Atributo1);
-
+                        catch (Exception)
+                        {
+                            continue;
                         }
                         continue;
-                    }
+                    }                    
                 }
+
                 catch (Exception e)
                 {
                     FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);

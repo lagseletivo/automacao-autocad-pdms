@@ -1,90 +1,51 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Drenagem.Setup;
-using System;
-using System.Collections.Generic;
-using TodosBlocos;
+using Autodesk.AutoCAD.EditorInput;
+using Autodesk.AutoCAD.Geometry;
 
 namespace Drenagem
 {
     public class TubulacaoDrenagem
     {
-        private static List<AtributosDoBloco> _lista;
-
-        public TubulacaoDrenagem()
+        public static void GetPointsFromUser()
         {
-            LerTodosOsBlocosEBuscarOsAtributos();
-        }
-        public static void LerTodosOsBlocosEBuscarOsAtributos()
-        {
+            // Get the current database and start the Transaction Manager
             Document documentoAtivo = Application.DocumentManager.MdiActiveDocument;
             Database database = documentoAtivo.Database;
+            Editor editor = documentoAtivo.Editor;
 
+            PromptPointResult pPtRes;
+            PromptPointOptions pPtOpts = new PromptPointOptions("");
+            // Prompt for the start point
+            pPtOpts.Message = "\nEnter the start point of the line: ";
+            pPtRes = documentoAtivo.Editor.GetPoint(pPtOpts);
+            Point3d ptStart = pPtRes.Value;// Exit if the user presses ESC or cancels the command
+            if (pPtRes.Status == PromptStatus.Cancel) return;
+            // Prompt for the end point
+            pPtOpts.Message = "\nEnter the end point of the line: ";
+            pPtOpts.UseBasePoint = true;
+            pPtOpts.BasePoint = ptStart;
+            pPtRes = documentoAtivo.Editor.GetPoint(pPtOpts);
+            Point3d ptEnd = pPtRes.Value;
+            if (pPtRes.Status == PromptStatus.Cancel) return;
+            // Start a transaction
             using (Transaction acTrans = database.TransactionManager.StartTransaction())
             {
                 BlockTable blockTable;
+                BlockTableRecord blockTableRecord;
+                // Open Model space for write
                 blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
-
-                try
-                {
-                    _lista = new List<AtributosDoBloco>();
-
-                    foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
-                    {
-
-                        BlockTableRecord blockTableRecord;
-                        blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
-
-                        foreach (ObjectId objId_loopVariable in blockTableRecord)
-                        {
-                            BlockReference blocoDinamico;
-                            blocoDinamico = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference;
-
-                            DynamicBlockReferencePropertyCollection properties = blocoDinamico.DynamicBlockReferencePropertyCollection;
-
-                            AtributosDoBloco Atributo1 = new AtributosDoBloco();
-
-                            for (int i = 0; i < properties.Count; i++)
-                            {
-                                DynamicBlockReferenceProperty property = properties[i];
-
-                                if (property.PropertyName == "Distance1")
-                                {
-                                    Atributo1.Distancia = property.Value.ToString();
-                                }
-                            }
-                            Atributo1.X = blocoDinamico.Position.X;
-                            Atributo1.Y = blocoDinamico.Position.Y;
-                            Atributo1.nomeBloco = blocoDinamico.Name;
-                            Atributo1.Handle = blocoDinamico.Handle.ToString();
-                            Atributo1.Angulo = blocoDinamico.Rotation;
-
-                            _lista.Add(Atributo1);
-                        }
-                        continue;
-                    }
-                }
-                catch (Exception e)
-                {
-                    FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);
-                }
+                blockTableRecord = acTrans.GetObject(blockTable[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                // Define the new line
+                Line criarLinha = new Line(ptStart, ptEnd); criarLinha.SetDatabaseDefaults();
+                // Add the line to the drawing
+                blockTableRecord.AppendEntity(criarLinha); acTrans.AddNewlyCreatedDBObject(criarLinha, true);
+                // Zoom to the extents or limits of the drawing
+                documentoAtivo.SendStringToExecute("._zoom _all ", true, false, false);
+                // Commit the changes and dispose of the transaction
                 acTrans.Commit();
             }
         }
-        public static void EscreveDadosNoExcel()
-        {
-            ExcelUtils.AbrirExcel();
-            ExcelUtils.EscreveDados(_lista);
-
-        }
-        private static void FinalizaTarefasAposExcecao(string mensagemInicial, Exception excecao)
-        {
-            Console.WriteLine();
-            Console.WriteLine(mensagemInicial + " Erro:" + Environment.NewLine + excecao.Message + Environment.NewLine + Environment.NewLine);
-            Console.WriteLine("Pressione qualquer tecla para sair.");
-            Environment.Exit(0);
-        }
-
     }
 }
 

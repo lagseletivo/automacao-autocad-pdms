@@ -77,6 +77,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EstaqueamentoEletrica.cs" />
     <Compile Include="CaixaPassagemEletrica.cs" />
     <Compile Include="SelecaoDosTextosTubulacao.cs" />
     <Compile Include="Setup\AtributosDoBloco.cs" />

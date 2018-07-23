@@ -1,17 +1,17 @@
-using Autodesk.AutoCAD.ApplicationServices;
+﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
-using Drenagem.Setup;
+using Drenagem;
+using TodosBlocos;
 using System;
 using System.Collections.Generic;
-using TodosBlocos;
 
-namespace Drenagem
+namespace Eletrica
 {
-    public class TubulacaoDrenagem
+    public class EstaqueamentoEletrica
     {
         private static List<AtributosDoBloco> _lista;
 
-        public TubulacaoDrenagem()
+        public EstaqueamentoEletrica()
         {
             LerTodosOsBlocosEBuscarOsAtributos();
         }
@@ -29,42 +29,40 @@ namespace Drenagem
                 {
                     _lista = new List<AtributosDoBloco>();
 
-                    foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
-                    {
-
                         BlockTableRecord blockTableRecord;
-                        blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
+                        blockTableRecord = acTrans.GetObject(blockTable["BLOCO_ESTACA_POSTE"], OpenMode.ForRead) as BlockTableRecord;
 
-                        foreach (ObjectId objId_loopVariable in blockTableRecord)
+                        foreach (ObjectId objId_loopVariable in blockTableRecord.GetBlockReferenceIds(true, true))
                         {
-                            BlockReference blocoDinamico;
-                            blocoDinamico = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference;
-
-                            DynamicBlockReferencePropertyCollection properties = blocoDinamico.DynamicBlockReferencePropertyCollection;
-
                             AtributosDoBloco Atributo1 = new AtributosDoBloco();
 
-                            for (int i = 0; i < properties.Count; i++)
+                            BlockReference bloco;
+                            bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference; ;
+
+                            BlockTableRecord nomeRealBloco = null;
+
+                            nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+
+                            AttributeCollection attCol = bloco.AttributeCollection;
+
+                            foreach (ObjectId attId in attCol)
                             {
-                                DynamicBlockReferenceProperty property = properties[i];
-
-                                if (property.PropertyName == "Distance1")
-                                {
-                                    Atributo1.Distancia = property.Value.ToString();
-                                }
+                                AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
+                                string texto = (attRef.TextString);
+                                string tag = attRef.Tag;
+                                Atributo1.NomeEfetivoDoBloco = texto;
                             }
-                            Atributo1.X = blocoDinamico.Position.X;
-                            Atributo1.Y = blocoDinamico.Position.Y;
-                            Atributo1.nomeBloco = blocoDinamico.Name;
-                            Atributo1.Handle = blocoDinamico.Handle.ToString();
-                            Atributo1.Angulo = blocoDinamico.Rotation;
 
+                            Atributo1.X = bloco.Position.X;
+                            Atributo1.Y = bloco.Position.Y;
+                            Atributo1.nomeBloco = nomeRealBloco.Name;
+                            Atributo1.Handle = bloco.Handle.ToString();
+                            Atributo1.Angulo = bloco.Rotation;
                             _lista.Add(Atributo1);
                         }
-                        continue;
+
                     }
-                }
-                catch (Exception e)
+                 catch (Exception e)
                 {
                     FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);
                 }
