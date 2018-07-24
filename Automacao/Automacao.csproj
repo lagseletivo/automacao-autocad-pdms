@@ -79,7 +79,7 @@
   <ItemGroup>
     <Compile Include="EstaqueamentoEletrica.cs" />
     <Compile Include="CaixaPassagemEletrica.cs" />
-    <Compile Include="SelecaoDosTextosTubulacao.cs" />
+    <Compile Include="SelecaoDosTextos.cs" />
     <Compile Include="Setup\AtributosDoBloco.cs" />
     <Compile Include="Comandos.cs" />
     <Compile Include="ExcelUtils.cs" />

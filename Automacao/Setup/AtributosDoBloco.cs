@@ -22,8 +22,12 @@
     {
         private string _elevacaoInicial;
         private string _elevacaoFinal;
+        private double _posicaoX;
+        private double _posicaoY;
 
         public string ElevacaoInicial { get => _elevacaoInicial; set => _elevacaoInicial = value; }
         public string ElevacaoFinal { get => _elevacaoFinal; set => _elevacaoFinal = value; }
+        public double PosicaoX { get => _posicaoX; set => _posicaoX = value; }
+        public double PosicaoY { get => _posicaoY; set => _posicaoY = value; }
     }
 }

@@ -11,7 +11,7 @@ namespace TodosComandos
         {
             SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
             SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
-            SelecaoDosBlocos.EscreveDadosNoExcel();
+            SelecaoDosBlocos.EscreveDadosNoExcel();            
         }
         //[CommandMethod("DrenagemTubulacao")]
         //public static void DrenagemTubulacao()
