@@ -13,13 +13,13 @@ namespace TodosComandos
             SelecaoDosBlocos.LerTodosOsBlocosEBuscarOsAtributos();
             SelecaoDosBlocos.EscreveDadosNoExcel();            
         }
-        //[CommandMethod("DrenagemTubulacao")]
-        //public static void DrenagemTubulacao()
-        //{
-        //TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
-        //TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
-        //TubulacaoDrenagem.EscreveDadosNoExcel();
-        //    } 
+        [CommandMethod("DrenagemTubulacao")]
+        public static void DrenagemTubulacao()
+        {
+            TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
+            TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
+            //TubulacaoDrenagem.EscreveDadosNoExcel();
+        }
     }
     public class ComandosEletrica
     {

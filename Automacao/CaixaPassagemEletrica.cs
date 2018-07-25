@@ -55,7 +55,7 @@ namespace Eletrica
 
                             Atributo1.X = bloco.Position.X;
                             Atributo1.Y = bloco.Position.Y;
-                            Atributo1.nomeBloco = nomeRealBloco.Name;
+                            Atributo1.NomeBloco = nomeRealBloco.Name;
                             Atributo1.Handle = bloco.Handle.ToString();
                             Atributo1.Angulo = bloco.Rotation;
                             _lista.Add(Atributo1);

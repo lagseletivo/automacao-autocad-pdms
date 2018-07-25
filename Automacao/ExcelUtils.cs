@@ -22,7 +22,6 @@ namespace Drenagem
             _pasta = excelApp.Workbooks.Open(nomeDoArquivo);
             _planilha = _pasta.ActiveSheet;
         }
-
         public static void EscreveDados(List<AtributosDoBloco> lista)
         {
             int linha = 4;
@@ -32,12 +31,11 @@ namespace Drenagem
                 _planilha.Cells[linha, 6] = atributo.X;
                 _planilha.Cells[linha, 7] = atributo.Y;
                 _planilha.Cells[linha, 1] = atributo.Handle;
-                _planilha.Cells[linha, 2] = atributo.nomeBloco;
+                _planilha.Cells[linha, 2] = atributo.NomeBloco;
                 _planilha.Cells[linha, 3] = atributo.NomeEfetivoDoBloco;
                 _planilha.Cells[linha, 25] = atributo.Angulo;
                 linha++;
             }
-
         }
         public static void EscreveElevacao(List<TextoElevacao> listaElevacao)
         {
@@ -50,7 +48,6 @@ namespace Drenagem
                 linha++;
             }
         }
-
     private static string AbreDialogoParaUsuarioSelecionarArquivo()
         {
             OpenFileDialog dialogo = new OpenFileDialog()

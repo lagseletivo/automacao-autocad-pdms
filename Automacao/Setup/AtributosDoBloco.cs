@@ -16,7 +16,7 @@
         public double Angulo { get => _angulo; set => _angulo = value; }
         public string Distancia { get => _distancia; set => _distancia = value; }
         public string Handle { get => _handle; set => _handle = value; }
-        public string nomeBloco { get => _nomeBloco; set => _nomeBloco = value; }
+        public string NomeBloco { get => _nomeBloco; set => _nomeBloco = value; }
     }
     public class TextoElevacao
     {

@@ -66,7 +66,7 @@ namespace Drenagem
 
                                 Atributo1.X = bloco.Position.X;
                                 Atributo1.Y = bloco.Position.Y;
-                                Atributo1.nomeBloco = nomeRealBloco.Name;
+                                Atributo1.NomeBloco = nomeRealBloco.Name;
                                 Atributo1.Handle = bloco.Handle.ToString();
                                 Atributo1.Angulo = bloco.Rotation;
                                 _lista.Add(Atributo1);
@@ -87,10 +87,10 @@ namespace Drenagem
                                 if (pmtSelRes.Status == PromptStatus.OK)
                                 {
                                     MText itemSelecionado = null;
-                                    foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
-                                    {
-                                        double distanciaMinima = Double.MaxValue;
+                                    double distanciaMinima = Double.MaxValue;
 
+                                    foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
+                                    { 
                                         if (id.ObjectClass.DxfName == "MTEXT")
                                         {
                                             var text = acTrans.GetObject(id, OpenMode.ForWrite) as MText;
@@ -122,20 +122,6 @@ namespace Drenagem
                                         Elevacao1.PosicaoY = itemSelecionado.Location.Y;
                                         _listaElevacao.Add(Elevacao1);
 
-                                        //if (itemSelecionado.Text.Contains("CA="))
-                                        //{
-                                        //    Elevacao1.ElevacaoInicial = itemSelecionado.Text;
-                                        //    //Elevacao1.PosicaoX = text.Location.X;
-                                        //    //Elevacao1.PosicaoY = text.Location.Y;
-                                        //    _listaElevacao.Add(Elevacao1);
-                                        //}
-                                        //if (itemSelecionado.Text.Contains("CFC="))
-                                        //{
-                                        //    Elevacao1.ElevacaoFinal = itemSelecionado.Text;
-                                        //    //Elevacao1.PosicaoX = text.Location.X;
-                                        //    //Elevacao1.PosicaoY = text.Location.Y;
-                                        //    _listaElevacao.Add(Elevacao1);
-                                        //}
                                     }
 
                                     else

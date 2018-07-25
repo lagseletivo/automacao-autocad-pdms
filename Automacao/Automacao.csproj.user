@@ -4,7 +4,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Autodesk\AutoCAD 2012 - English\acad.exe</StartProgram>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
-    <StartArguments>/b "C:\Users\felip\Documents\Script.scr"</StartArguments>
+    <StartArguments>
+    </StartArguments>
     <StartWorkingDirectory>
     </StartWorkingDirectory>
   </PropertyGroup>

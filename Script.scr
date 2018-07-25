@@ -1,3 +1,3 @@
-open "C:\Users\felip\Documents\DE-5400.00-6312-182-E8L-201=0.dwg"
-netload "C:\Users\felip\Documents\Repos\automacao-autocad-pdms\Automacao\bin\Debug\Automacao.dll"
+open "C:\Users\felipe.galdino\Documents\Felipe Galdino\Modelagem\Drenagem 6000\DE-5400.00-6312-182-E8L-201=0.dwg"
+netload "C:\Users\felipe.galdino\Documents\Repos\Automacao\bin\Debug\Automacao.dll"
 DRENAGEMCAIXAS
