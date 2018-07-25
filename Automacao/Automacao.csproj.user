@@ -3,6 +3,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\Autodesk\AutoCAD 2012 - English\acad.exe</StartProgram>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <StartArguments>/b "C:\Users\felip\Documents\Script.scr"</StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup>
     <ProjectView>ShowAllFiles</ProjectView>

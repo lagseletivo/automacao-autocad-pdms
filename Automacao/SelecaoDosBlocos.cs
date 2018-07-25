@@ -5,6 +5,7 @@ using Autodesk.AutoCAD.Geometry;
 using Drenagem.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TodosBlocos;
 
 namespace Drenagem
@@ -18,6 +19,7 @@ namespace Drenagem
         {
             LerTodosOsBlocosEBuscarOsAtributos();
         }
+
         public static void LerTodosOsBlocosEBuscarOsAtributos()
         {
             Document documentoAtivo = Application.DocumentManager.MdiActiveDocument;
@@ -46,7 +48,7 @@ namespace Drenagem
                                 AtributosDoBloco Atributo1 = new AtributosDoBloco();
 
                                 BlockReference bloco;
-                                bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference; ;
+                                bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference;
 
                                 BlockTableRecord nomeRealBloco = null;
 
@@ -72,61 +74,74 @@ namespace Drenagem
                                 //------------------------------------------------------------------------------------------------------------------------------------------------------
                                 TextoElevacao Elevacao1 = new TextoElevacao();
 
-                                Point3d p1 = new Point3d(Atributo1.X - 7.5, Atributo1.Y + 7.5, 0);
-                                Point3d p2 = new Point3d(Atributo1.X + 7.5, Atributo1.Y + 7.5, 0);
-                                Point3d p3 = new Point3d(Atributo1.X + 7.5, Atributo1.Y - 7.5, 0);
-                                Point3d p4 = new Point3d(Atributo1.X - 7.5, Atributo1.Y - 7.5, 0);
+                                Point3dCollection pntCol = new Point3dCollection
+                                {
+                                    new Point3d(Atributo1.X - 7.5, Atributo1.Y + 7.5, 0),
+                                    new Point3d(Atributo1.X + 7.5, Atributo1.Y + 7.5, 0),
+                                    new Point3d(Atributo1.X + 7.5, Atributo1.Y - 7.5, 0),
+                                    new Point3d(Atributo1.X - 7.5, Atributo1.Y - 7.5, 0)
+                                };
 
-                                Point3dCollection pntCol = new Point3dCollection();
-                                pntCol.Add(p1);
-                                pntCol.Add(p2);
-                                pntCol.Add(p3);
-                                pntCol.Add(p4);
-
-                                PromptSelectionResult pmtSelRes = null;
-
-                                //ObjectIdCollection oPlTxtIdColl = null;
-
-                                //var filterList = new TypedValue[1];
-                                //filterList.SetValue(new TypedValue(0, "MTEXT"), 0);                                
-
-                                //SelectionFilter selecaoFiltro = new SelectionFilter(filterList);
-
-                                pmtSelRes = editor.SelectCrossingPolygon(pntCol);
-
-                                //int textoEncontrado = 0;
+                                PromptSelectionResult pmtSelRes = editor.SelectCrossingPolygon(pntCol);
 
                                 if (pmtSelRes.Status == PromptStatus.OK)
-                                {                           
+                                {
+                                    MText itemSelecionado = null;
                                     foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
-                                    { 
+                                    {
+                                        double distanciaMinima = Double.MaxValue;
+
                                         if (id.ObjectClass.DxfName == "MTEXT")
                                         {
                                             var text = acTrans.GetObject(id, OpenMode.ForWrite) as MText;
-
-                                            //var text = (DBText)acTrans.GetObject(id, OpenMode.ForRead);
-                                            
                                             if (text.Text.Contains("CA="))
                                             {
-                                                //Point3d locacao = text.Location.TransformBy(Matrix3d.Identity);
-
-                                                Elevacao1.ElevacaoInicial = text.Text;
-                                                //Elevacao1.PosicaoX = text.Location;
-                                                //Elevacao1.PosicaoX = locacao;
-                                                _listaElevacao.Add(Elevacao1);
-                                            }
-                                            if (text.Text.Contains("CFC="))
-                                            {
-                                                Elevacao1.ElevacaoFinal = text.Text;
-                                                _listaElevacao.Add(Elevacao1);
-                                            }
-                                            else
-                                                editor.WriteMessage("\nDid As Elevações não foram encontradas!");
-
-                                            //textoEncontrado++;
+                                                double distancia = Math.Sqrt(Math.Pow(text.Location.X - Atributo1.X, 2) + Math.Pow(text.Location.Y - Atributo1.Y, 2));
+                                                if (distancia < distanciaMinima)
+                                                {
+                                                    distanciaMinima = distancia;
+                                                    itemSelecionado = text;
+                                                }
+                                            }                                           
                                         }
                                     }
+
+                                    if (itemSelecionado != null)
+                                    {
+                                        var lista = itemSelecionado.Text.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+                                        string textoCA = lista.Where(p => p.Contains("CA=")).Any() ? lista.Where(p => p.Contains("CA=")).FirstOrDefault() : string.Empty;
+                                        string textoCFC = lista.Where(p => p.Contains("CFC=")).Any() ? lista.Where(p => p.Contains("CFC=")).FirstOrDefault() : string.Empty;
+
+                                        textoCA = textoCA.Replace("CA=", "");
+                                        textoCFC = textoCFC.Replace("CFC=", "");
+
+                                        Elevacao1.ElevacaoInicial = textoCA;
+                                        Elevacao1.ElevacaoFinal = textoCFC;
+                                        Elevacao1.PosicaoX = itemSelecionado.Location.X;
+                                        Elevacao1.PosicaoY = itemSelecionado.Location.Y;
+                                        _listaElevacao.Add(Elevacao1);
+
+                                        //if (itemSelecionado.Text.Contains("CA="))
+                                        //{
+                                        //    Elevacao1.ElevacaoInicial = itemSelecionado.Text;
+                                        //    //Elevacao1.PosicaoX = text.Location.X;
+                                        //    //Elevacao1.PosicaoY = text.Location.Y;
+                                        //    _listaElevacao.Add(Elevacao1);
+                                        //}
+                                        //if (itemSelecionado.Text.Contains("CFC="))
+                                        //{
+                                        //    Elevacao1.ElevacaoFinal = itemSelecionado.Text;
+                                        //    //Elevacao1.PosicaoX = text.Location.X;
+                                        //    //Elevacao1.PosicaoY = text.Location.Y;
+                                        //    _listaElevacao.Add(Elevacao1);
+                                        //}
+                                    }
+
+                                    else
+                                        editor.WriteMessage("\nDid As Elevações não foram encontradas!");
                                 }
+
                                 //------------------------------------------------------------------------------------------------------------------------------------------------------
                                 //------------------------------------------------------------------------------------------------------------------------------------------------------
                             }

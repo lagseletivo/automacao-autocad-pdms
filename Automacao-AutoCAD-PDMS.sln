@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automacao", "Automacao\Automacao.csproj", "{5E027DF9-6275-4A21-812B-130232D455D3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{66887EFB-139D-423C-9AA9-A1CC0A6269F8}"
+	ProjectSection(SolutionItems) = preProject
+		Script.scr = Script.scr
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
