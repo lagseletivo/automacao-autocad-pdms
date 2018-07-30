@@ -1,12 +1,9 @@
 ﻿using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
-using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.Internal.DatabaseServices;
 using Drenagem.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TodosBlocos;
 
 namespace Drenagem
@@ -14,7 +11,6 @@ namespace Drenagem
     public class TubulacaoDrenagem
     {
         private static List<AtributosDoBloco> _lista;
-        //private static List<TextoElevacao> _listaElevacao;
 
         public TubulacaoDrenagem()
         {
@@ -27,82 +23,58 @@ namespace Drenagem
             Database database = documentoAtivo.Database;
             Editor editor = documentoAtivo.Editor;
 
-            using (Transaction acTrans = database.TransactionManager.StartTransaction())
+            List<string> blkNames = new List<string>();
+
+            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
             {
-                BlockTable blockTable = (BlockTable)acTrans.GetObject(database.BlockTableId, OpenMode.ForRead);
+                blkNames.Add(nome);
+            }
 
-                try
+            using (Transaction acTrans = documentoAtivo.TransactionManager.StartTransaction())
+            {
+                BlockTable blockTable;
+                blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+
+                //SelectionFilter filtro = new SelectionFilter(CreateFilterListForBlocks(blkNames));
+
+                PromptSelectionResult pmtSelRes = editor.GetSelection();
+
+                if (pmtSelRes.Status == PromptStatus.OK)
                 {
-                    //_listaElevacao = new List<TextoElevacao>();
+                    _lista = new List<AtributosDoBloco>();
 
-                    foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
+
+                    BlockTableRecord blockTableRecord;
+                    blockTableRecord = acTrans.GetObject(blockTable["TUBO FF DN 150"], OpenMode.ForRead) as BlockTableRecord;
+
+
+                    AtributosDoBloco Atributo1 = new AtributosDoBloco();
+
+                    if (!blockTableRecord.IsDynamicBlock) return;
+
+                    foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
                     {
                         try
                         {
-                            _lista = new List<AtributosDoBloco>();
- 
-                            foreach (ObjectId objId_loopVariable in blockTable)
+                            if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name.Equals("TUBO FF DN 150"))
                             {
-                                BlockTableRecord blockTableRecord = (BlockTableRecord)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockTableRecord;
-                                AtributosDoBloco Atributo1 = new AtributosDoBloco();
+                                BlockReference bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
 
-                                if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name.Equals(nome))
+                                DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
+
+                                for (int i = 0; i < properties.Count; i++)
                                 {
-                                    BlockReference bloco;
-                                    bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference;
-                                                                       
-                                    //-------------------------------------------------------------------------------------------------------------------------------------
-                                    //-------------------------------------------------------------------------------------------------------------------------------------
-                                    //-------------------------------------------------------------------------------------------------------------------------------------
-
-                                    BlockTableRecord btrDyn = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
-                                    if (btrDyn != null && !btrDyn.ExtensionDictionary.IsNull)
+                                    DynamicBlockReferenceProperty property = properties[i];
+                                    if (property.PropertyName == "Distance1")
                                     {
-                                        DBDictionary extDic = acTrans.GetObject(btrDyn.ExtensionDictionary, OpenMode.ForRead) as DBDictionary;
-                                        if (extDic != null)
-                                        {
-                                            EvalGraph graph = acTrans.GetObject(extDic.GetAt("ACAD_ENHANCEDBLOCK"), OpenMode.ForRead) as EvalGraph;
-
-                                            int[] nodeIds = graph.GetAllNodes();
-                                            foreach (uint nodeId in nodeIds)
-                                            {
-                                                DBObject node = graph.GetNode(nodeId, OpenMode.ForRead, acTrans);
-                                                if (!(node is BlockPropertiesTable)) continue;
-                                                BlockPropertiesTable bpt = node as BlockPropertiesTable;
-                                                int currentRow = SelectRowNumber(ref bpt);
-                                                BlockPropertiesTableRow row = bpt.Rows[currentRow];
-                                                List<string> nameProps = new List<string>();
-                                                for (int i = 0; i < bpt.Columns.Count; i++)
-                                                {
-                                                    nameProps.Add(bpt.Columns[i].Parameter.Name);
-                                                }
-                                                DynamicBlockReferencePropertyCollection dynPropsCol = bloco.DynamicBlockReferencePropertyCollection;
-
-                                                foreach (DynamicBlockReferenceProperty dynProp in dynPropsCol)
-                                                {
-                                                    int i = nameProps.FindIndex(delegate (string s) { return s == dynProp.PropertyName; });
-                                                    if (i >= 0 && i < nameProps.Count)
-                                                    {
-                                                        try
-                                                        {
-                                                            dynProp.Value = row[i].AsArray()[0].Value;
-                                                        }
-                                                        catch
-                                                        {
-                                                            editor.WriteMessage("\nCan not set to {0} value={1}",
-                                                              dynProp.PropertyName, row[i].AsArray()[0].Value);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        Atributo1.Distancia = property.Value.ToString();
+                                        _lista.Add(Atributo1);
                                     }
-
-
-                                    //-------------------------------------------------------------------------------------------------------------------------------------
-                                    //-------------------------------------------------------------------------------------------------------------------------------------
-                                    //-------------------------------------------------------------------------------------------------------------------------------------
-
+                                    Atributo1.X = bloco.Position.X;
+                                    Atributo1.Y = bloco.Position.Y;
+                                    Atributo1.Handle = bloco.Handle.ToString();
+                                    Atributo1.Angulo = bloco.Rotation;
+                                    _lista.Add(Atributo1);
                                 }
                             }
                         }
@@ -110,59 +82,12 @@ namespace Drenagem
                         {
                             continue;
                         }
-                        continue;
                     }
-                }
 
-                catch (Exception e)
-                {
-                    FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);
                 }
                 acTrans.Commit();
             }
         }
-        public static int SelectRowNumber(ref BlockPropertiesTable bpt)
-        {
-            Editor ed = Application.DocumentManager.MdiActiveDocument.Editor;
-            int columns = bpt.Columns.Count;
-            int rows = bpt.Rows.Count;
-            int currentRow = 0, currentColumn = 0;
-            ed.WriteMessage("\n");
-            for (currentColumn = 0; currentColumn < columns; currentColumn++)
-            {
-                ed.WriteMessage("{0}; ", bpt.Columns[currentColumn].Parameter.Name);
-            }
-            foreach (BlockPropertiesTableRow row in bpt.Rows)
-            {
-                ed.WriteMessage("\n[{0}]:\t", currentRow);
-                for (currentColumn = 0; currentColumn < columns; currentColumn++)
-                {
-                    TypedValue[] columnValue = row[currentColumn].AsArray();
-                    foreach (TypedValue tpVal in columnValue)
-                    {
-                        ed.WriteMessage("{0}; ", tpVal.Value);
-                    }
-                    ed.WriteMessage("|");
-                }
-                currentRow++;
-            }
-
-            PromptIntegerResult res;
-            string.Format("0-{0}", rows - 1);
-
-            while ((res = ed.GetInteger(string.Format("\nSelect row number (0-{0}): ", rows - 1))).Status == PromptStatus.OK)
-            {
-                if (res.Value >= 0 && res.Value <= rows) return res.Value;
-            }
-            return -1;
-        }
-        //public static void EscreveDadosNoExcel()
-        //{
-        //    ExcelUtils.AbrirExcel();
-        //    ExcelUtils.EscreveDados(_lista);
-        //    //ExcelUtils.EscreveElevacao(_listaElevacao);
-
-        //}
         private static void FinalizaTarefasAposExcecao(string mensagemInicial, Exception excecao)
         {
             Console.WriteLine();
@@ -171,7 +96,21 @@ namespace Drenagem
             Environment.Exit(0);
         }
 
+        private static TypedValue[] CreateFilterListForBlocks(List<string> blkNames)
+        {
+            List<TypedValue> typedValues = new List<TypedValue>(blkNames.Count);
 
+            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
+            {
+                typedValues.Add(new TypedValue((int)DxfCode.BlockName, (nome)));
+            }
+            return typedValues.ToArray();
+        }
+
+        public static void EscreveDadosNoExcel()
+        {
+            ExcelUtilsTubulacao.AbrirExcel();
+            ExcelUtilsTubulacao.EscreveDados(_lista);
+        }
     }
 }
-

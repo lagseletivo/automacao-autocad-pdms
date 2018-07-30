@@ -18,7 +18,7 @@ namespace TodosComandos
         {
             TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
             TubulacaoDrenagem.LerTodosOsBlocosEBuscarOsAtributos();
-            //TubulacaoDrenagem.EscreveDadosNoExcel();
+            TubulacaoDrenagem.EscreveDadosNoExcel();
         }
     }
     public class ComandosEletrica
