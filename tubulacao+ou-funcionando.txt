@@ -1,0 +1,116 @@
+using Autodesk.AutoCAD.ApplicationServices;
+using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.EditorInput;
+using Drenagem.Setup;
+using System;
+using System.Collections.Generic;
+using TodosBlocos;
+
+namespace Drenagem
+{
+    public class TubulacaoDrenagem
+    {
+        private static List<AtributosDoBloco> _lista;
+
+        public TubulacaoDrenagem()
+        {
+            LerTodosOsBlocosEBuscarOsAtributos();
+        }
+
+        public static void LerTodosOsBlocosEBuscarOsAtributos()
+        {
+            Document documentoAtivo = Application.DocumentManager.MdiActiveDocument;
+            Database database = documentoAtivo.Database;
+            Editor editor = documentoAtivo.Editor;
+
+            List<string> blkNames = new List<string>();
+
+            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
+            {
+                blkNames.Add(nome);
+            }
+
+            using (Transaction acTrans = documentoAtivo.TransactionManager.StartTransaction())
+            {
+                BlockTable blockTable;
+                blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
+
+                //SelectionFilter filtro = new SelectionFilter(CreateFilterListForBlocks(blkNames));
+
+                PromptSelectionResult pmtSelRes = editor.GetSelection();
+
+                if (pmtSelRes.Status == PromptStatus.OK)
+                {
+                    _lista = new List<AtributosDoBloco>();
+
+
+                    BlockTableRecord blockTableRecord;
+                    blockTableRecord = acTrans.GetObject(blockTable["TUBO FF DN 150"], OpenMode.ForRead) as BlockTableRecord;
+
+
+                    AtributosDoBloco Atributo1 = new AtributosDoBloco();
+
+                    if (!blockTableRecord.IsDynamicBlock) return;
+
+                    foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
+                    {
+                        try
+                        {
+                            if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name.Equals("TUBO FF DN 150"))
+                            {
+                                BlockReference bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
+
+                                DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
+
+                                for (int i = 0; i < properties.Count; i++)
+                                {
+                                    DynamicBlockReferenceProperty property = properties[i];
+                                    if (property.PropertyName == "Distance1")
+                                    {
+                                        Atributo1.Distancia = property.Value.ToString();
+                                        _lista.Add(Atributo1);
+                                    }
+                                    Atributo1.X = bloco.Position.X;
+                                    Atributo1.Y = bloco.Position.Y;
+                                    Atributo1.Handle = bloco.Handle.ToString();
+                                    Atributo1.Angulo = bloco.Rotation;
+                                    _lista.Add(Atributo1);
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            continue;
+                        }
+                    }
+
+                }
+                acTrans.Commit();
+            }
+        }
+        private static void FinalizaTarefasAposExcecao(string mensagemInicial, Exception excecao)
+        {
+            Console.WriteLine();
+            Console.WriteLine(mensagemInicial + " Erro:" + Environment.NewLine + excecao.Message + Environment.NewLine + Environment.NewLine);
+            Console.WriteLine("Pressione qualquer tecla para sair.");
+            Environment.Exit(0);
+        }
+
+        private static TypedValue[] CreateFilterListForBlocks(List<string> blkNames)
+        {
+            List<TypedValue> typedValues = new List<TypedValue>(blkNames.Count);
+
+            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
+            {
+                typedValues.Add(new TypedValue((int)DxfCode.BlockName, (nome)));
+            }
+            return typedValues.ToArray();
+        }
+
+        public static void EscreveDadosNoExcel()
+        {
+            ExcelUtilsTubulacao.AbrirExcel();
+            ExcelUtilsTubulacao.EscreveDados(_lista);
+        }
+    }
+}

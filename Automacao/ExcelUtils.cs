@@ -95,10 +95,13 @@ namespace Drenagem
             foreach (AtributosDoBloco atributo in lista)
             {
                 _planilha.Cells[linha, 6] = atributo.X;
+                _planilha.Cells[linha, 8] = atributo.XTubo;
+                _planilha.Cells[linha, 9] = atributo.YTubo;
                 _planilha.Cells[linha, 7] = atributo.Y;
                 _planilha.Cells[linha, 1] = atributo.Handle;
                 _planilha.Cells[linha, 2] = atributo.NomeBloco;
-                _planilha.Cells[linha, 3] = atributo.Distancia;
+                _planilha.Cells[linha, 3] = atributo.Diametro;
+                _planilha.Cells[linha, 10] = atributo.Distancia;
                 _planilha.Cells[linha, 25] = atributo.Angulo;
                 linha++;
             }

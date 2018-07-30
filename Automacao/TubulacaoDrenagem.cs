@@ -4,6 +4,7 @@ using Autodesk.AutoCAD.EditorInput;
 using Drenagem.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TodosBlocos;
 
 namespace Drenagem
@@ -12,30 +13,22 @@ namespace Drenagem
     {
         private static List<AtributosDoBloco> _lista;
 
-        public TubulacaoDrenagem()
-        {
-            LerTodosOsBlocosEBuscarOsAtributos();
-        }
-
         public static void LerTodosOsBlocosEBuscarOsAtributos()
         {
             Document documentoAtivo = Application.DocumentManager.MdiActiveDocument;
             Database database = documentoAtivo.Database;
             Editor editor = documentoAtivo.Editor;
 
-            List<string> blkNames = new List<string>();
-
-            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
-            {
-                blkNames.Add(nome);
-            }
 
             using (Transaction acTrans = documentoAtivo.TransactionManager.StartTransaction())
             {
                 BlockTable blockTable;
                 blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
 
-                //SelectionFilter filtro = new SelectionFilter(CreateFilterListForBlocks(blkNames));
+                //TypedValue[] acTypValAr = new TypedValue[0];
+                // acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "BLOCK"),0);
+
+                //SelectionFilter acSelFtr = new SelectionFilter(acTypValAr);
 
                 PromptSelectionResult pmtSelRes = editor.GetSelection();
 
@@ -43,38 +36,100 @@ namespace Drenagem
                 {
                     _lista = new List<AtributosDoBloco>();
 
-
-                    BlockTableRecord blockTableRecord;
-                    blockTableRecord = acTrans.GetObject(blockTable["TUBO FF DN 150"], OpenMode.ForRead) as BlockTableRecord;
-
-
-                    AtributosDoBloco Atributo1 = new AtributosDoBloco();
-
-                    if (!blockTableRecord.IsDynamicBlock) return;
-
                     foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
                     {
                         try
                         {
-                            if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name.Equals("TUBO FF DN 150"))
+                            AtributosDoBloco Atributo1 = new AtributosDoBloco();
+
+                            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
                             {
-                                BlockReference bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
+                                BlockTableRecord blockTableRecord;
+                                blockTableRecord = acTrans.GetObject(blockTable[nome], OpenMode.ForRead) as BlockTableRecord;
 
-                                DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
+                                if (!blockTableRecord.IsDynamicBlock) return;
 
-                                for (int i = 0; i < properties.Count; i++)
+                                try
                                 {
-                                    DynamicBlockReferenceProperty property = properties[i];
-                                    if (property.PropertyName == "Distance1")
+                                    if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name.Equals(nome))
                                     {
-                                        Atributo1.Distancia = property.Value.ToString();
-                                        _lista.Add(Atributo1);
+                                        BlockReference bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
+
+                                        DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
+
+                                        BlockTableRecord nomeRealBloco = null;
+
+                                        nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+
+                                        for (int i = 0; i < properties.Count; i++)
+                                        {
+                                            DynamicBlockReferenceProperty property = properties[i];
+                                            if (property.PropertyName == "Distance1")
+                                            {
+                                                Atributo1.Distancia = property.Value.ToString();
+                                                _lista.Add(Atributo1);
+                                            }
+                                            Atributo1.X = bloco.Position.X;
+                                            Atributo1.Y = bloco.Position.Y;
+                                            Atributo1.NomeBloco = nomeRealBloco.Name;
+                                            Atributo1.Handle = bloco.Handle.ToString();
+                                            Atributo1.Angulo = bloco.Rotation;
+                                            _lista.Add(Atributo1);
+
+                                            var lista = Atributo1.NomeBloco.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                                            string diametro = lista.Where(p => p.Contains("TUBO FF DN ")).Any() ? lista.Where(p => p.Contains("TUBO FF DN ")).FirstOrDefault() : string.Empty;
+
+                                            diametro = diametro.Replace("TUBO FF DN ", "");
+
+                                            Atributo1.Diametro = diametro;
+
+                                            double distancia = Convert.ToDouble(Atributo1.Distancia);
+
+                                            double dimensaoFinalX;
+                                            double dimensaoFinalY;
+
+                                            if (bloco.Rotation < 1.5708)
+                                            {
+                                                dimensaoFinalX = distancia * Math.Cos(bloco.Rotation);
+                                                dimensaoFinalY = distancia * Math.Sin(bloco.Rotation);
+
+                                                Atributo1.XTubo = bloco.Position.X + dimensaoFinalX;
+                                                Atributo1.YTubo = bloco.Position.Y + dimensaoFinalY;
+                                                _lista.Add(Atributo1);
+                                            }
+                                            else if (bloco.Rotation > 1.5708 && bloco.Rotation <= 3.14159265)
+                                            {
+                                                dimensaoFinalX = distancia * Math.Sin(3.14159265 - bloco.Rotation);
+                                                dimensaoFinalY = distancia * Math.Cos(3.14159265 - bloco.Rotation);
+
+                                                Atributo1.XTubo = bloco.Position.X - dimensaoFinalX;
+                                                Atributo1.YTubo = bloco.Position.Y + dimensaoFinalY;
+                                                _lista.Add(Atributo1);
+                                            }
+                                            else if (bloco.Rotation > 3.14159265 && bloco.Rotation <= 4.71239)
+                                            {
+                                                dimensaoFinalX = distancia * Math.Sin(4.71239 - bloco.Rotation);
+                                                dimensaoFinalY = distancia * Math.Cos(4.71239 - bloco.Rotation);
+
+                                                Atributo1.XTubo = bloco.Position.X - dimensaoFinalX;
+                                                Atributo1.YTubo = bloco.Position.Y - dimensaoFinalY;
+                                                _lista.Add(Atributo1);
+                                            }
+                                            else if (bloco.Rotation > 4.71239 && bloco.Rotation <= 6.28319)
+                                            {
+                                                dimensaoFinalX = distancia * Math.Sin(6.28319 - bloco.Rotation);
+                                                dimensaoFinalY = distancia * Math.Cos(6.28319 - bloco.Rotation);
+
+                                                Atributo1.XTubo = bloco.Position.X + dimensaoFinalX;
+                                                Atributo1.YTubo = bloco.Position.Y - dimensaoFinalY;
+                                                _lista.Add(Atributo1);
+                                            }
+                                        }
                                     }
-                                    Atributo1.X = bloco.Position.X;
-                                    Atributo1.Y = bloco.Position.Y;
-                                    Atributo1.Handle = bloco.Handle.ToString();
-                                    Atributo1.Angulo = bloco.Rotation;
-                                    _lista.Add(Atributo1);
+                                }
+                                catch (Exception)
+                                {
+                                    continue;
                                 }
                             }
                         }
@@ -83,7 +138,6 @@ namespace Drenagem
                             continue;
                         }
                     }
-
                 }
                 acTrans.Commit();
             }
@@ -95,18 +149,7 @@ namespace Drenagem
             Console.WriteLine("Pressione qualquer tecla para sair.");
             Environment.Exit(0);
         }
-
-        private static TypedValue[] CreateFilterListForBlocks(List<string> blkNames)
-        {
-            List<TypedValue> typedValues = new List<TypedValue>(blkNames.Count);
-
-            foreach (string nome in ConstantesTubulacao.TubulacaoNomeDosBlocos)
-            {
-                typedValues.Add(new TypedValue((int)DxfCode.BlockName, (nome)));
-            }
-            return typedValues.ToArray();
-        }
-
+        
         public static void EscreveDadosNoExcel()
         {
             ExcelUtilsTubulacao.AbrirExcel();
