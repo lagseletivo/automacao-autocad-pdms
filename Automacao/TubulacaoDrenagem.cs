@@ -13,24 +13,24 @@ namespace Drenagem
     {
         private static List<AtributosDoBloco> _lista;
 
+        public TubulacaoDrenagem()
+        {
+            LerTodosOsBlocosEBuscarOsAtributos();
+        }
+
         public static void LerTodosOsBlocosEBuscarOsAtributos()
         {
             Document documentoAtivo = Application.DocumentManager.MdiActiveDocument;
             Database database = documentoAtivo.Database;
             Editor editor = documentoAtivo.Editor;
 
+            PromptSelectionResult pmtSelRes = editor.GetSelection();
 
             using (Transaction acTrans = documentoAtivo.TransactionManager.StartTransaction())
             {
                 BlockTable blockTable;
                 blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
 
-                //TypedValue[] acTypValAr = new TypedValue[0];
-                // acTypValAr.SetValue(new TypedValue((int)DxfCode.Start, "BLOCK"),0);
-
-                //SelectionFilter acSelFtr = new SelectionFilter(acTypValAr);
-
-                PromptSelectionResult pmtSelRes = editor.GetSelection();
 
                 if (pmtSelRes.Status == PromptStatus.OK)
                 {
@@ -51,24 +51,32 @@ namespace Drenagem
 
                                 try
                                 {
-                                    if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name.Equals(nome))
+                                    BlockReference bloco = null;
+
+                                    bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
+
+                                    DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
+
+                                    BlockTableRecord nomeRealBloco = null;
+
+                                    nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
+
+                                    if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name == nome)
                                     {
-                                        BlockReference bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
-
-                                        DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
-
-                                        BlockTableRecord nomeRealBloco = null;
-
-                                        nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
 
                                         for (int i = 0; i < properties.Count; i++)
                                         {
+                                            //if (!_lista.Any(b => b.Handle.ToString() == bloco.Handle.ToString()))
+                                            //{
+
                                             DynamicBlockReferenceProperty property = properties[i];
+
                                             if (property.PropertyName == "Distance1")
                                             {
                                                 Atributo1.Distancia = property.Value.ToString();
                                                 _lista.Add(Atributo1);
                                             }
+
                                             Atributo1.X = bloco.Position.X;
                                             Atributo1.Y = bloco.Position.Y;
                                             Atributo1.NomeBloco = nomeRealBloco.Name;
@@ -124,6 +132,9 @@ namespace Drenagem
                                                 Atributo1.YTubo = bloco.Position.Y - dimensaoFinalY;
                                                 _lista.Add(Atributo1);
                                             }
+
+                                            //}
+                                            break;
                                         }
                                     }
                                 }
@@ -149,7 +160,7 @@ namespace Drenagem
             Console.WriteLine("Pressione qualquer tecla para sair.");
             Environment.Exit(0);
         }
-        
+
         public static void EscreveDadosNoExcel()
         {
             ExcelUtilsTubulacao.AbrirExcel();
