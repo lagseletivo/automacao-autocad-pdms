@@ -70,8 +70,6 @@ namespace Drenagem
                                 Atributo1.Handle = bloco.Handle.ToString();
                                 Atributo1.Angulo = bloco.Rotation;
                                 _lista.Add(Atributo1);
-                                //------------------------------------------------------------------------------------------------------------------------------------------------------
-                                //------------------------------------------------------------------------------------------------------------------------------------------------------
                                 TextoElevacao Elevacao1 = new TextoElevacao();
 
                                 Point3dCollection pntCol = new Point3dCollection
@@ -90,7 +88,7 @@ namespace Drenagem
                                     double distanciaMinima = Double.MaxValue;
 
                                     foreach (ObjectId id in pmtSelRes.Value.GetObjectIds())
-                                    { 
+                                    {
                                         if (id.ObjectClass.DxfName == "MTEXT")
                                         {
                                             var text = acTrans.GetObject(id, OpenMode.ForWrite) as MText;
@@ -102,7 +100,7 @@ namespace Drenagem
                                                     distanciaMinima = distancia;
                                                     itemSelecionado = text;
                                                 }
-                                            }                                           
+                                            }
                                         }
                                     }
 
@@ -127,9 +125,6 @@ namespace Drenagem
                                     else
                                         editor.WriteMessage("\nDid As Elevações não foram encontradas!");
                                 }
-
-                                //------------------------------------------------------------------------------------------------------------------------------------------------------
-                                //------------------------------------------------------------------------------------------------------------------------------------------------------
                             }
                         }
                         catch (Exception)

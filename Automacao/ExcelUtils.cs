@@ -106,17 +106,17 @@ namespace Drenagem
                 linha++;
             }
         }
-        //public static void EscreveElevacao(List<TextoElevacao> listaElevacao)
-        //{
-        //    int linha = 4;
-        //    foreach (TextoElevacao elevacao in listaElevacao)
-        //    {
-        //        _planilha.Cells[linha, 4] = elevacao.ElevacaoInicial;
-        //        _planilha.Cells[linha, 4] = elevacao.ElevacaoFinal;
+        public static void EscreveElevacao(List<TextoElevacao> listaElevacao)
+        {
+            int linha = 4;
+            foreach (TextoElevacao elevacao in listaElevacao)
+            {
+                _planilha.Cells[linha, 4] = elevacao.ElevacaoInicial;
+                _planilha.Cells[linha, 5] = elevacao.ElevacaoFinal;
 
-        //        linha++;
-        //    }
-        //}
+                linha++;
+            }
+        }
         private static string AbreDialogoParaUsuarioSelecionarArquivo()
         {
             OpenFileDialog dialogo = new OpenFileDialog()
