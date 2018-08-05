@@ -69,7 +69,7 @@ namespace Drenagem
                                                 DynamicBlockReferenceProperty property = properties[i];
                                                 if (property.PropertyName == "Distance1")
                                                 {
-                                                    Atributo1.Distancia = property.Value.ToString();
+                                                    Atributo1.Distancia = Convert.ToDouble(property.Value);
                                                     _lista.Add(Atributo1);
                                                 }
                                                 Atributo1.X = bloco.Position.X;

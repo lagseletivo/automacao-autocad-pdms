@@ -8,7 +8,7 @@
         private double _Y;
         private string _nomeEfetivoDoBloco;
         private double _angulo;
-        private string _distancia;
+        private double _distancia;
         private string _diametro;
         private string _handle;
         private string _nomeBloco;
@@ -19,7 +19,7 @@
         public double Y { get => _Y; set => _Y = value; }
         public string NomeEfetivoDoBloco { get => _nomeEfetivoDoBloco; set => _nomeEfetivoDoBloco = value; }
         public double Angulo { get => _angulo; set => _angulo = value; }
-        public string Distancia { get => _distancia; set => _distancia = value; }
+        public double Distancia { get => _distancia; set => _distancia = value; }
         public string Handle { get => _handle; set => _handle = value; }
         public string NomeBloco { get => _nomeBloco; set => _nomeBloco = value; }
         public string Diametro { get => _diametro; set => _diametro = value; }
