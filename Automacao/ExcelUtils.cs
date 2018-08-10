@@ -10,7 +10,6 @@ namespace Drenagem
     {
         private static Excel.Worksheet _planilha;
         private static Excel.Workbook _pasta;
-
         public static Excel.Worksheet Planilha => _planilha;
         public static Excel.Workbook Pasta => _pasta;
 
@@ -25,7 +24,6 @@ namespace Drenagem
         public static void EscreveDados(List<AtributosDoBloco> lista)
         {
             int linha = 4;
-
             foreach (AtributosDoBloco atributo in lista)
             {
                 _planilha.Cells[linha, 6] = atributo.X;
@@ -75,7 +73,6 @@ namespace Drenagem
     {
         private static Excel.Worksheet _planilha;
         private static Excel.Workbook _pasta;
-
         public static Excel.Worksheet Planilha => _planilha;
         public static Excel.Workbook Pasta => _pasta;
 
@@ -91,18 +88,17 @@ namespace Drenagem
         public static void EscreveDados(List<AtributosDoBloco> lista)
         {
             int linha = 4;
-
             foreach (AtributosDoBloco atributo in lista)
             {
                 _planilha.Cells[linha, 6] = atributo.X;
-                _planilha.Cells[linha, 8] = atributo.XTubo;
-                _planilha.Cells[linha, 9] = atributo.YTubo;
                 _planilha.Cells[linha, 7] = atributo.Y;
+                _planilha.Cells[linha, 8] = atributo.XTubo;
+                _planilha.Cells[linha, 9] = atributo.YTubo;                
                 _planilha.Cells[linha, 1] = atributo.Handle;
                 _planilha.Cells[linha, 2] = atributo.NomeBloco;
                 _planilha.Cells[linha, 3] = atributo.Diametro;
-                _planilha.Cells[linha, 10] = atributo.Distancia;
-                _planilha.Cells[linha, 25] = atributo.Angulo;
+                _planilha.Cells[linha, 17] = atributo.Distancia;
+                _planilha.Cells[linha, 32] = atributo.Angulo;            
                 linha++;
             }
         }

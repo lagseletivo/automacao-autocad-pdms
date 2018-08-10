@@ -33,7 +33,6 @@ namespace Drenagem
                 BlockTable blockTable;
                 blockTable = acTrans.GetObject(database.BlockTableId, OpenMode.ForRead) as BlockTable;
 
-
                 if (pmtSelRes.Status == PromptStatus.OK)
                 {
                     _lista = new List<AtributosDoBloco>();
@@ -55,32 +54,27 @@ namespace Drenagem
                                 try
                                 {
                                     BlockReference bloco = null;
-
                                     bloco = acTrans.GetObject(id, OpenMode.ForRead) as BlockReference;
+                                    BlockTableRecord nomeRealBloco = null;
+                                    nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
 
                                     DynamicBlockReferencePropertyCollection properties = bloco.DynamicBlockReferencePropertyCollection;
-
-                                    BlockTableRecord nomeRealBloco = null;
-
-                                    nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
 
                                     if (blockTableRecord.IsDynamicBlock && blockTableRecord.Name == nome)
                                     {
                                         for (int i = 0; i < properties.Count; i++)
                                         {
                                             DynamicBlockReferenceProperty property = properties[i];
-
                                             if (property.PropertyName == "Distance1")
                                             {
                                                 Atributo1.Distancia = property.Value.ToString();
-                                                
+
                                             }
                                             Atributo1.X = bloco.Position.X;
                                             Atributo1.Y = bloco.Position.Y;
                                             Atributo1.NomeBloco = nomeRealBloco.Name;
                                             Atributo1.Handle = bloco.Handle.ToString();
                                             Atributo1.Angulo = bloco.Rotation;
-                                            
 
                                             var lista = Atributo1.NomeBloco.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                                             if (lista.Where(c => c.Contains("TUBO FF DN ")).Any())
@@ -108,7 +102,7 @@ namespace Drenagem
 
                                                 Atributo1.XTubo = bloco.Position.X + dimensaoFinalX;
                                                 Atributo1.YTubo = bloco.Position.Y + dimensaoFinalY;
-                                               
+
                                             }
                                             else if (bloco.Rotation > 1.5708 && bloco.Rotation <= 3.14159265)
                                             {
@@ -117,7 +111,7 @@ namespace Drenagem
 
                                                 Atributo1.XTubo = bloco.Position.X - dimensaoFinalX;
                                                 Atributo1.YTubo = bloco.Position.Y + dimensaoFinalY;
-                                               
+
                                             }
                                             else if (bloco.Rotation > 3.14159265 && bloco.Rotation <= 4.71239)
                                             {
@@ -126,7 +120,7 @@ namespace Drenagem
 
                                                 Atributo1.XTubo = bloco.Position.X - dimensaoFinalX;
                                                 Atributo1.YTubo = bloco.Position.Y - dimensaoFinalY;
-                                                
+
                                             }
                                             else if (bloco.Rotation > 4.71239 && bloco.Rotation <= 6.28319)
                                             {
@@ -135,13 +129,11 @@ namespace Drenagem
 
                                                 Atributo1.XTubo = bloco.Position.X + dimensaoFinalX;
                                                 Atributo1.YTubo = bloco.Position.Y - dimensaoFinalY;
-                                                
+
                                             }
-                                            _lista.Add(Atributo1);
 
-                                            //------------------------------------------------------------------------------------------------------------
                                             TextoElevacao Elevacao1 = new TextoElevacao();
-
+                                            //----------------------------------------------------------------------------
                                             Point3dCollection pntCol = new Point3dCollection
                                             {new Point3d(Atributo1.X - 5, Atributo1.Y + 5, 0),
                                              new Point3d(Atributo1.X + 5, Atributo1.Y + 5, 0),
@@ -169,7 +161,7 @@ namespace Drenagem
                                                                 itemSelecionado = text;
                                                             }
                                                         }
-                                                    }
+                                                    }                                                    
                                                 }
                                                 if (itemSelecionado != null)
                                                 {
@@ -180,20 +172,17 @@ namespace Drenagem
 
                                                     Elevacao1.ElevacaoInicial = textoCA;
                                                     Elevacao1.PosicaoX = itemSelecionado.Location.X;
-                                                    Elevacao1.PosicaoY = itemSelecionado.Location.Y;                                                   
-
+                                                    Elevacao1.PosicaoY = itemSelecionado.Location.Y;
                                                 }
-
                                                 else
                                                     editor.WriteMessage("\nAs Elevações não foram encontradas!");
                                             }
-                                            //-------------------------------------------------------------------------------------------------------------
+                                            //----------------------------------------------------------------------------------------------
                                             Point3dCollection pntColElevacao = new Point3dCollection
                                             {new Point3d(Atributo1.XTubo - 5, Atributo1.YTubo + 5, 0),
                                              new Point3d(Atributo1.XTubo + 5, Atributo1.YTubo + 5, 0),
                                              new Point3d(Atributo1.XTubo + 5, Atributo1.YTubo - 5, 0),
                                              new Point3d(Atributo1.XTubo - 5, Atributo1.YTubo - 5, 0)};
-
                                             PromptSelectionResult pmtSelResPoint2 = editor.SelectCrossingPolygon(pntColElevacao);
 
                                             if (pmtSelResPoint2.Status == PromptStatus.OK)
@@ -226,7 +215,7 @@ namespace Drenagem
 
                                                     Elevacao1.ElevacaoFinal = textoCA2;
                                                     Elevacao1.PosicaoX = itemSelecionado2.Location.X;
-                                                    Elevacao1.PosicaoY = itemSelecionado2.Location.Y;                                                   
+                                                    Elevacao1.PosicaoY = itemSelecionado2.Location.Y;
 
                                                 }
 
@@ -235,8 +224,7 @@ namespace Drenagem
 
                                                 _listaElevacao.Add(Elevacao1);
                                             }
-                                            //------------------------------------------------------------------------------------------------------------
-
+                                            _lista.Add(Atributo1);
                                             break;
                                         }
                                     }
@@ -263,7 +251,6 @@ namespace Drenagem
             Console.WriteLine("Pressione qualquer tecla para sair.");
             Environment.Exit(0);
         }
-
         public static void EscreveDadosNoExcel()
         {
             ExcelUtilsTubulacao.AbrirExcel();

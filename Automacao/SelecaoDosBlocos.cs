@@ -49,9 +49,7 @@ namespace Drenagem
 
                                 BlockReference bloco;
                                 bloco = (BlockReference)acTrans.GetObject(objId_loopVariable, OpenMode.ForRead) as BlockReference;
-
                                 BlockTableRecord nomeRealBloco = null;
-
                                 nomeRealBloco = acTrans.GetObject(bloco.DynamicBlockTableRecord, OpenMode.ForRead) as BlockTableRecord;
 
                                 AttributeCollection attCol = bloco.AttributeCollection;
@@ -60,7 +58,6 @@ namespace Drenagem
                                 {
                                     AttributeReference attRef = (AttributeReference)acTrans.GetObject(attId, OpenMode.ForRead);
                                     string texto = (attRef.TextString);
-                                    //string tag = attRef.Tag;
                                     Atributo1.NomeEfetivoDoBloco = texto;
                                 }
 
@@ -70,16 +67,14 @@ namespace Drenagem
                                 Atributo1.Handle = bloco.Handle.ToString();
                                 Atributo1.Angulo = bloco.Rotation;
                                 _lista.Add(Atributo1);
+
                                 TextoElevacao Elevacao1 = new TextoElevacao();
 
                                 Point3dCollection pntCol = new Point3dCollection
-                                {
-                                    new Point3d(Atributo1.X - 7.5, Atributo1.Y + 7.5, 0),
+                                    {new Point3d(Atributo1.X - 7.5, Atributo1.Y + 7.5, 0),
                                     new Point3d(Atributo1.X + 7.5, Atributo1.Y + 7.5, 0),
                                     new Point3d(Atributo1.X + 7.5, Atributo1.Y - 7.5, 0),
-                                    new Point3d(Atributo1.X - 7.5, Atributo1.Y - 7.5, 0)
-                                };
-
+                                    new Point3d(Atributo1.X - 7.5, Atributo1.Y - 7.5, 0)};
                                 PromptSelectionResult pmtSelRes = editor.SelectCrossingPolygon(pntCol);
 
                                 if (pmtSelRes.Status == PromptStatus.OK)
@@ -121,9 +116,8 @@ namespace Drenagem
                                         _listaElevacao.Add(Elevacao1);
 
                                     }
-
                                     else
-                                        editor.WriteMessage("\nDid As Elevações não foram encontradas!");
+                                        editor.WriteMessage("\nAs Elevações não foram encontradas!");
                                 }
                             }
                         }
@@ -134,7 +128,6 @@ namespace Drenagem
                         continue;
                     }
                 }
-
                 catch (Exception e)
                 {
                     FinalizaTarefasAposExcecao("Ocorreu um erro ao ler os blocos do AutoCAD.", e);
@@ -147,7 +140,6 @@ namespace Drenagem
             ExcelUtils.AbrirExcel();
             ExcelUtils.EscreveDados(_lista);
             ExcelUtils.EscreveElevacao(_listaElevacao);
-
         }
         private static void FinalizaTarefasAposExcecao(string mensagemInicial, Exception excecao)
         {
@@ -156,8 +148,6 @@ namespace Drenagem
             Console.WriteLine("Pressione qualquer tecla para sair.");
             Environment.Exit(0);
         }
-
-
     }
 }
 
