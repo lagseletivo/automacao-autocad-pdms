@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcDbMgd">
-      <HintPath>..\..\..\..\..\..\ObjectARX 2012\inc\AcDbMgd.dll</HintPath>
+      <HintPath>..\..\..\..\..\ObjectARX 2011\inc\AcDbMgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgdbrep, Version=18.2.0.0, Culture=neutral, processorArchitecture=MSIL">

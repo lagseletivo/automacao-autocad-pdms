@@ -89,6 +89,12 @@ namespace Drenagem
                                                 diametro = diametro.Replace("TUBO CONC ARMADO DN", "");
                                                 Atributo1.Diametro = diametro;
                                             }
+                                            else if (lista.Where(c => c.Contains("TUBO PVC DN")).Any())
+                                            {
+                                                string diametro = lista.Where(p => p.Contains("TUBO PVC DN ")).Any() ? lista.Where(p => p.Contains("TUBO PVC DN ")).FirstOrDefault() : string.Empty;
+                                                diametro = diametro.Replace("TUBO PVC DN ", "");
+                                                Atributo1.Diametro = diametro;
+                                            }
 
                                             double distancia = Convert.ToDouble(Atributo1.Distancia);
 
